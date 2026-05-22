@@ -1,0 +1,59 @@
+Patient ID: PT-1024
+Monitoring Session: Overnight Observation
+Date: 2026-05-22
+
+[22:00]
+Heart Rate: 82 BPM
+Blood Pressure: 121/79 mmHg
+Respiratory Rate: 17 breaths/min
+Oxygen Saturation: 98%
+Temperature: 36.9 C
+
+[23:00]
+Heart Rate: 76 BPM
+Blood Pressure: 118/77 mmHg
+Respiratory Rate: 16 breaths/min
+Oxygen Saturation: 98%
+Temperature: 36.8 C
+
+[00:00]
+Heart Rate: 71 BPM
+Blood Pressure: 116/74 mmHg
+Respiratory Rate: 15 breaths/min
+Oxygen Saturation: 99%
+Temperature: 36.7 C
+
+[01:00]
+Heart Rate: 68 BPM
+Blood Pressure: 114/72 mmHg
+Respiratory Rate: 14 breaths/min
+Oxygen Saturation: 99%
+Temperature: 36.7 C
+
+[02:00]
+Heart Rate: 65 BPM
+Blood Pressure: 113/71 mmHg
+Respiratory Rate: 14 breaths/min
+Oxygen Saturation: 98%
+Temperature: 36.6 C
+
+[03:00]
+Heart Rate: 67 BPM
+Blood Pressure: 115/72 mmHg
+Respiratory Rate: 15 breaths/min
+Oxygen Saturation: 98%
+Temperature: 36.7 C
+
+[04:00]
+Heart Rate: 70 BPM
+Blood Pressure: 117/74 mmHg
+Respiratory Rate: 15 breaths/min
+Oxygen Saturation: 99%
+Temperature: 36.8 C
+
+[05:00]
+Heart Rate: 74 BPM
+Blood Pressure: 119/76 mmHg
+Respiratory Rate: 16 breaths/min
+Oxygen Saturation: 98%
+Temperature: 36.8 C

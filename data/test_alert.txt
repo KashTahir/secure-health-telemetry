@@ -1,0 +1,63 @@
+Patient ID: PT-2048
+Monitoring Session: Overnight Observation
+Date: 2026-05-22
+
+[22:00]
+Heart Rate: 96 BPM
+Blood Pressure: 138/88 mmHg
+Respiratory Rate: 19 breaths/min
+Oxygen Saturation: 96%
+Temperature: 37.4 C
+
+[23:00]
+Heart Rate: 102 BPM
+Blood Pressure: 145/92 mmHg
+Respiratory Rate: 21 breaths/min
+Oxygen Saturation: 95%
+Temperature: 37.8 C
+
+[00:00]
+Heart Rate: 111 BPM
+Blood Pressure: 152/96 mmHg
+Respiratory Rate: 24 breaths/min
+Oxygen Saturation: 93%
+Temperature: 38.2 C
+
+[01:00]
+Heart Rate: 124 BPM
+Blood Pressure: 161/101 mmHg
+Respiratory Rate: 27 breaths/min
+Oxygen Saturation: 91%
+Temperature: 38.9 C
+
+[02:00]
+Heart Rate: 132 BPM
+Blood Pressure: 169/104 mmHg
+Respiratory Rate: 29 breaths/min
+Oxygen Saturation: 89%
+Temperature: 39.4 C
+
+ALERT:
+Potential respiratory distress detected.
+Immediate clinical review recommended.
+
+[03:00]
+Heart Rate: 128 BPM
+Blood Pressure: 164/100 mmHg
+Respiratory Rate: 28 breaths/min
+Oxygen Saturation: 90%
+Temperature: 39.1 C
+
+[04:00]
+Heart Rate: 118 BPM
+Blood Pressure: 156/97 mmHg
+Respiratory Rate: 25 breaths/min
+Oxygen Saturation: 92%
+Temperature: 38.6 C
+
+[05:00]
+Heart Rate: 108 BPM
+Blood Pressure: 148/93 mmHg
+Respiratory Rate: 22 breaths/min
+Oxygen Saturation: 94%
+Temperature: 38.1 C
