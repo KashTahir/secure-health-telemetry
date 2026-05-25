@@ -6,6 +6,7 @@ Author: Kashmain Tahir
 """
 
 import socket
+from utils.dh_utils import *
 
 def connect_to_station():
     """
@@ -22,8 +23,16 @@ def connect_to_station():
         monitor_socket.connect((HOST, PORT))
         print("Connected to server")
 
-        # send data
+        # key generation
+        client_pr_key = generate_dh_private_key()
+        client_pu_key = generate_dh_public_key(client_pr_key)
 
+        print("client_pr_key")
+        print(client_pr_key)
+        print("client_pu_key")
+        print(client_pu_key)
+
+        # send data
         with open("data/test_normal.txt", "r") as file:
             patient_data = file.read()
 

@@ -6,7 +6,7 @@ Author: Kashmain Tahir
 """
 
 import socket
-
+from utils.dh_utils import *
 
 def start_monitoring_station():
     """
@@ -27,6 +27,15 @@ def start_monitoring_station():
         # accept the connection from the client
         connection_socket, connection_addr = station_socket.accept()
         print(f"connected to patient monitor: {connection_addr}")
+
+        # key generation
+        server_pr_key = generate_dh_private_key()
+        server_pu_key = generate_dh_public_key(server_pr_key)
+
+        print("server_pr_key")
+        print(server_pr_key)
+        print("server_pu_key")
+        print(server_pu_key)
 
         data = b""
         # keep receiving data until all is done
@@ -52,6 +61,7 @@ def start_monitoring_station():
     except Exception as error:
         print(f"could not start monitoring station: {error}")
 
+    
 
 def print_server(text):
     """
