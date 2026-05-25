@@ -20,23 +20,21 @@ def connect_to_station():
         # set up
         monitor_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         monitor_socket.connect((HOST, PORT))
-        print_client("Connected to server")
+        print("Connected to server")
 
         # send data
-        # sample_data = """patient id: 100\nheart rate: 100\noxygen:100%"""
-        # monitor_socket.sendall(sample_data.encode())
 
         with open("data/test_normal.txt", "r") as file:
             patient_data = file.read()
 
         monitor_socket.sendall(patient_data.encode())
-        print_client("data sent")
+        print("Data sent to Monitoring Station")
 
         monitor_socket.close()
 
 
     except Exception as error:
-        print(f"CLIENT -- could not start patient monitor: {error}")
+        print(f"could not start patient monitor: {error}")
 
 
 

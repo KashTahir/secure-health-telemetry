@@ -22,10 +22,11 @@ def start_monitoring_station():
         station_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         station_socket.bind((HOST, PORT))
         station_socket.listen()
-        print_server("Monitoring Station waiting for incoming connections...")
+        print("Monitoring Station waiting for incoming connections...")
 
         # accept the connection from the client
         connection_socket, connection_addr = station_socket.accept()
+        print(f"connected to patient monitor: {connection_addr}")
 
         data = b""
         # keep receiving data until all is done
@@ -41,7 +42,7 @@ def start_monitoring_station():
 
         # data = connection_socket.recv(1024)
 
-        print_server("data received")
+        print("Data Received")
         print(data.decode())
 
         connection_socket.close()
@@ -49,7 +50,7 @@ def start_monitoring_station():
 
 
     except Exception as error:
-        print(f"SERVER -- could not start monitoring station: {error}")
+        print(f"could not start monitoring station: {error}")
 
 
 def print_server(text):
