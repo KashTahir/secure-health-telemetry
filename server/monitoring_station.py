@@ -32,15 +32,29 @@ def start_monitoring_station():
         server_pr_key = generate_dh_private_key()
         server_pu_key = generate_dh_public_key(server_pr_key)
 
-        print("server_pr_key")
-        print(server_pr_key)
-        print("server_pu_key")
-        print(server_pu_key)
+        # receive key
+        client_pu_key_bytes = connection_socket.recv(4096)
+        print("Client public key received")
+        # print(client_pu_key_bytes)
+        client_pu_key = pu_key_to_obj(client_pu_key_bytes)
 
+        # send key
+        server_pu_key_bytes = pu_key_to_bytes(server_pu_key)
+        # print("server_pu_key_bytes: ")
+        # print(server_pu_key_bytes)
+        connection_socket.sendall(server_pu_key_bytes)
+        print("Server Public Key sent to Client")
+
+        # print("server_pr_key")
+        # print(server_pr_key)
+        # print("server_pu_key")
+        # print(server_pu_key)
+
+        CHUNK_SIZE = 1024
         data = b""
         # keep receiving data until all is done
 
-        CHUNK_SIZE = 1024
+        
         while True:
             incoming_data = connection_socket.recv(CHUNK_SIZE)
             
