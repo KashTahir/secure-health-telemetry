@@ -5,10 +5,10 @@ Author: Kashmain Tahir
 """
 from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-from cryptography.hazmat.primitives import hashes
-import os
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+# from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+# from cryptography.hazmat.primitives import hashes
+# import os
+# from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # plan from ed:
 
@@ -49,36 +49,36 @@ def pu_key_to_obj(pu_key_bytes):
     return pu_key_obj
     
 
-# generate shared secret using their public keys and own private keys = K
-def generate_secret(own_pr_key, peer_pu_key):
-    shared_secret = own_pr_key.exchange(peer_pu_key)
-    return shared_secret
+# # generate shared secret using their public keys and own private keys = K
+# def generate_secret(own_pr_key, peer_pu_key):
+#     shared_secret = own_pr_key.exchange(peer_pu_key)
+#     return shared_secret
 
 
-# generate a AES-256 key from the shared secret
-def generate_aes_key(shared_secret):
-    aes_key = HKDF(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=None,
-        info=b'health-telemetry-handshake-data',
-        ).derive(shared_secret)
+# # generate a AES-256 key from the shared secret
+# def generate_aes_key(shared_secret):
+#     aes_key = HKDF(
+#         algorithm=hashes.SHA256(),
+#         length=32,
+#         salt=None,
+#         info=b'health-telemetry-handshake-data',
+#         ).derive(shared_secret)
     
-    return aes_key
+#     return aes_key
 
 
-NONCE_SIZE = 12
-# encrypt using AESGCM
-def aesgcm_encrypt(aes_key, data):
+# NONCE_SIZE = 12
+# # encrypt using AESGCM
+# def aesgcm_encrypt(aes_key, data):
 
-    aesgcm = AESGCM(aes_key)
-    nonce = os.urandom(NONCE_SIZE)
-    ciphertext = aesgcm.encrypt(nonce, data.encode(), None)
-    return nonce, ciphertext
+#     aesgcm = AESGCM(aes_key)
+#     nonce = os.urandom(NONCE_SIZE)
+#     ciphertext = aesgcm.encrypt(nonce, data.encode(), None)
+#     return nonce, ciphertext
 
-# decrypt using AESGCM
-def aesgcm_decrypt(aes_key, nonce, ciphertext):
+# # decrypt using AESGCM
+# def aesgcm_decrypt(aes_key, nonce, ciphertext):
 
-    aesgcm = AESGCM(aes_key)
-    plaintext = aesgcm.decrypt(nonce, ciphertext, None)
-    return plaintext.decode()
+#     aesgcm = AESGCM(aes_key)
+#     plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+#     return plaintext.decode()
