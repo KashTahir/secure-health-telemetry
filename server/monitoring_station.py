@@ -60,6 +60,9 @@ def start_monitoring_station():
         # print("server_pu_key")
         # print(server_pu_key)
 
+        
+        # nonce = connection_socket.recv(NONCE_SIZE)
+
         CHUNK_SIZE = 1024
         data = b""
         # keep receiving data until all is done
@@ -75,8 +78,13 @@ def start_monitoring_station():
 
         # data = connection_socket.recv(1024)
 
-        print("Data Received")
-        print(data.decode())
+        # print("Data Received")
+        # print(data.decode())
+
+        nonce = data[:NONCE_SIZE]
+        ciphertext = data[NONCE_SIZE:]
+        plaintext = aesgcm_decrypt(aes_key, nonce, ciphertext)
+        print(plaintext)
 
         connection_socket.close()
         station_socket.close()

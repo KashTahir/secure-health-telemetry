@@ -7,6 +7,8 @@ from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
+import os
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # plan from ed:
 
@@ -65,3 +67,18 @@ def generate_aes_key(shared_secret):
     return aes_key
 
 
+NONCE_SIZE = 12
+# encrypt using AESGCM
+def aesgcm_encrypt(aes_key, data):
+
+    aesgcm = AESGCM(aes_key)
+    nonce = os.urandom(NONCE_SIZE)
+    ciphertext = aesgcm.encrypt(nonce, data.encode(), None)
+    return nonce, ciphertext
+
+# decrypt using AESGCM
+def aesgcm_decrypt(aes_key, nonce, ciphertext):
+
+    aesgcm = AESGCM(aes_key)
+    plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+    return plaintext.decode()

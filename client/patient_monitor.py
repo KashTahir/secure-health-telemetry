@@ -60,8 +60,17 @@ def connect_to_station():
         # send data
         with open("data/test_normal.txt", "r") as file:
             patient_data = file.read()
+        
+        nonce, ciphertext = aesgcm_encrypt(aes_key, patient_data)
+        packet_to_send = nonce + ciphertext
+        # monitor_socket.sendall(nonce)
+        # monitor_socket.sendall(ciphertext)
+        monitor_socket.sendall(packet_to_send)
 
-        monitor_socket.sendall(patient_data.encode())
+        # print("Ciphertext:")
+        # print(packet_to_send)
+
+        # monitor_socket.sendall(patient_data.encode())
         print("Data sent to Monitoring Station")
 
         monitor_socket.close()
