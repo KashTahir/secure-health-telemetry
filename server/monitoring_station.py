@@ -29,14 +29,9 @@ def start_monitoring_station():
         print(f"connected to patient monitor: {connection_addr}")
 
         # key generation
-        server_pr_key = generate_dh_private_key()
+        dh_parameters = generate_dh_params()
+        server_pr_key = generate_dh_private_key(dh_parameters)
         server_pu_key = generate_dh_public_key(server_pr_key)
-
-        # receive key
-        client_pu_key_bytes = connection_socket.recv(4096)
-        print("Client public key received")
-        # print(client_pu_key_bytes)
-        client_pu_key = pu_key_to_obj(client_pu_key_bytes)
 
         # send key
         server_pu_key_bytes = pu_key_to_bytes(server_pu_key)
@@ -44,6 +39,21 @@ def start_monitoring_station():
         # print(server_pu_key_bytes)
         connection_socket.sendall(server_pu_key_bytes)
         print("Server Public Key sent to Client")
+
+        # receive key
+        client_pu_key_bytes = connection_socket.recv(4096)
+        print("Client public key received")
+        # print(client_pu_key_bytes)
+        client_pu_key = pu_key_to_obj(client_pu_key_bytes)
+
+        # generating shared secret
+        shared_secret = generate_secret(server_pr_key, client_pu_key)
+        # print("server shared secret")
+        # print(shared_secret)
+
+        aes_key = generate_aes_key(shared_secret)
+        # print("server aes_key")
+        # print(aes_key.hex())
 
         # print("server_pr_key")
         # print(server_pr_key)

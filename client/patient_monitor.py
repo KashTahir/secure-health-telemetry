@@ -23,12 +23,17 @@ def connect_to_station():
         monitor_socket.connect((HOST, PORT))
         print("Connected to server")
 
-        # sr_conn_socket, sr_conn_addr = monitor_socket.accept()
-        # print(f"connected to patient monitor: {sr_conn_addr}")
+        # receive server public key
+        server_pu_key_bytes = monitor_socket.recv(4096)
+        print("Server public key received")
+        # print(server_pu_key_bytes)
+        server_pu_key = pu_key_to_obj(server_pu_key_bytes)
 
         # key generation
-        client_pr_key = generate_dh_private_key()
+        dh_parameters = server_pu_key.parameters()
+        client_pr_key = generate_dh_private_key(dh_parameters)
         client_pu_key = generate_dh_public_key(client_pr_key)
+
 
         # send key
         client_pu_key_bytes = pu_key_to_bytes(client_pu_key)
@@ -37,13 +42,16 @@ def connect_to_station():
         monitor_socket.sendall(client_pu_key_bytes)
         print("Client Public Key sent to Server")
 
-        # receive key
-        server_pu_key_bytes = monitor_socket.recv(4096)
-        print("Server public key received")
-        # print(server_pu_key_bytes)
-        server_pu_key = pu_key_to_obj(server_pu_key_bytes)
-        
 
+        # generating shared secret
+        shared_secret = generate_secret(client_pr_key, server_pu_key)
+        # print("client shared secret")
+        # print(shared_secret)
+        
+        aes_key = generate_aes_key(shared_secret)
+        # print("client aes_key")
+        # print(aes_key.hex())
+    
         # print("client_pr_key")
         # print(client_pr_key)
         # print("client_pu_key")
