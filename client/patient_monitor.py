@@ -81,17 +81,6 @@ def connect_to_station():
         print(f"could not start patient monitor: {error}")
 
 
-
-def print_client(text):
-    """
-    helper function to print statements from the client
-    Args:
-        text: the string to output
-    """
-
-    print(f"CLIENT -- {text}")
-
-
 def main():
     connect_to_station()
 

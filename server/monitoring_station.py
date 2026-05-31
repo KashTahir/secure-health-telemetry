@@ -94,17 +94,6 @@ def start_monitoring_station():
     except Exception as error:
         print(f"could not start monitoring station: {error}")
 
-    
-
-def print_server(text):
-    """
-    helper function to print statements from the server
-    Args:
-        text: the string to output
-    """
-
-    print(f"SERVER -- {text}")
-
 
 def main():
     start_monitoring_station()

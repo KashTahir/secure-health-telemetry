@@ -5,10 +5,6 @@ Author: Kashmain Tahir
 """
 from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives import serialization
-# from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-# from cryptography.hazmat.primitives import hashes
-# import os
-# from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # plan from ed:
 
@@ -23,8 +19,6 @@ def generate_dh_params():
 
     return dh_params
 
-
-
 # User A and User B need to select private keys X. X < q
 def generate_dh_private_key(dh_params):
     pr_key = dh_params.generate_private_key()
@@ -36,6 +30,7 @@ def generate_dh_public_key(private_key):
     return pu_key
 
 # share the public key
+
 # convert public key objet to bytes to send over the network
 def pu_key_to_bytes(pu_key_obj):
     pu_key_bytes = pu_key_obj.public_bytes(
@@ -48,37 +43,3 @@ def pu_key_to_obj(pu_key_bytes):
     pu_key_obj = serialization.load_pem_public_key(pu_key_bytes)
     return pu_key_obj
     
-
-# # generate shared secret using their public keys and own private keys = K
-# def generate_secret(own_pr_key, peer_pu_key):
-#     shared_secret = own_pr_key.exchange(peer_pu_key)
-#     return shared_secret
-
-
-# # generate a AES-256 key from the shared secret
-# def generate_aes_key(shared_secret):
-#     aes_key = HKDF(
-#         algorithm=hashes.SHA256(),
-#         length=32,
-#         salt=None,
-#         info=b'health-telemetry-handshake-data',
-#         ).derive(shared_secret)
-    
-#     return aes_key
-
-
-# NONCE_SIZE = 12
-# # encrypt using AESGCM
-# def aesgcm_encrypt(aes_key, data):
-
-#     aesgcm = AESGCM(aes_key)
-#     nonce = os.urandom(NONCE_SIZE)
-#     ciphertext = aesgcm.encrypt(nonce, data.encode(), None)
-#     return nonce, ciphertext
-
-# # decrypt using AESGCM
-# def aesgcm_decrypt(aes_key, nonce, ciphertext):
-
-#     aesgcm = AESGCM(aes_key)
-#     plaintext = aesgcm.decrypt(nonce, ciphertext, None)
-#     return plaintext.decode()

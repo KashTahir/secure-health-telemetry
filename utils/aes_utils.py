@@ -20,7 +20,7 @@ def generate_aes_key(shared_secret):
     
     return aes_key
 
-
+# 96-bit nonce is the standard size
 NONCE_SIZE = 12
 # encrypt using AESGCM
 def aesgcm_encrypt(aes_key, data):
