@@ -1,7 +1,14 @@
+"""
+Utility Class with functions for the implmentation of AES-GCM
+
+Author: Kashmain Tahir
+"""
+
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
 import os
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.exceptions import InvalidTag
 
 # generate shared secret using their public keys and own private keys = K
 def generate_secret(own_pr_key, peer_pu_key):
@@ -33,6 +40,9 @@ def aesgcm_encrypt(aes_key, data):
 # decrypt using AESGCM
 def aesgcm_decrypt(aes_key, nonce, ciphertext):
 
-    aesgcm = AESGCM(aes_key)
-    plaintext = aesgcm.decrypt(nonce, ciphertext, None)
-    return plaintext.decode()
+    try:
+        aesgcm = AESGCM(aes_key)
+        plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+        return plaintext.decode()
+    except InvalidTag:
+        print("Integrity Verification Failed. Could not decrypt data.")

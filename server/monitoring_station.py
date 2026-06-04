@@ -30,6 +30,7 @@ def start_monitoring_station():
         print(f"connected to patient monitor: {connection_addr}")
 
         # key generation
+        print("Generating Diffie-Hellman Parameters")
         dh_parameters = generate_dh_params()
         server_pr_key = generate_dh_private_key(dh_parameters)
         server_pu_key = generate_dh_public_key(server_pr_key)
@@ -53,6 +54,7 @@ def start_monitoring_station():
         # print(shared_secret)
 
         aes_key = generate_aes_key(shared_secret)
+        print("AES key generated")
         # print("server aes_key")
         # print(aes_key.hex())
 
@@ -82,6 +84,10 @@ def start_monitoring_station():
         # print("Data Received")
         # print(data.decode())
 
+        if (len(data) < NONCE_SIZE):
+            print("Invalid data received")
+            return
+        
         nonce = data[:NONCE_SIZE]
         ciphertext = data[NONCE_SIZE:]
         plaintext = aesgcm_decrypt(aes_key, nonce, ciphertext)
