@@ -52,11 +52,6 @@ def connect_to_station():
         print("AES key generated")
         # print("client aes_key")
         # print(aes_key.hex())
-    
-        # print("client_pr_key")
-        # print(client_pr_key)
-        # print("client_pu_key")
-        # print(client_pu_key)
 
         # send data
 
@@ -66,12 +61,12 @@ def connect_to_station():
                 patient_data = file.read()
         except FileNotFoundError:
             print("patient data not found")
+            monitor_socket.close()
             return
         if not len(patient_data) > 0:
             print("patient data empty")
+            monitor_socket.close()
             return
-
-
 
         nonce, ciphertext = aesgcm_encrypt(aes_key, patient_data)
         packet_to_send = nonce + ciphertext
@@ -81,7 +76,7 @@ def connect_to_station():
         if TAMPER_MODE:
             print("TAMPER MODE ON")
             packet_to_send_bytes_arr = bytearray(packet_to_send)
-            # XORing one of the bytes with 00000001 to modify one bit of the data 
+            # XORing one of the bytes with 00000001 to modify the data 
             packet_to_send_bytes_arr[15] ^= 1
             packet_to_send = bytes(packet_to_send_bytes_arr)
             

@@ -57,12 +57,6 @@ def start_monitoring_station():
         print("AES key generated")
         # print("server aes_key")
         # print(aes_key.hex())
-
-        # print("server_pr_key")
-        # print(server_pr_key)
-        # print("server_pu_key")
-        # print(server_pu_key)
-
         
         # nonce = connection_socket.recv(NONCE_SIZE)
 
