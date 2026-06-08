@@ -8,6 +8,7 @@ Author: Kashmain Tahir
 import socket
 from utils.dh_utils import *
 from utils.aes_utils import *
+from utils.rsa_utils import *
 
 def start_monitoring_station():
     """
@@ -34,12 +35,18 @@ def start_monitoring_station():
         dh_parameters = generate_dh_params()
         server_pr_key = generate_dh_private_key(dh_parameters)
         server_pu_key = generate_dh_public_key(server_pr_key)
+        print("Diffie-Hellman Parameters Generated")
 
         # send key
         server_pu_key_bytes = pu_key_to_bytes(server_pu_key)
+        server_rsa_pr_key = read_private_key("keys/server_pr.pem")
+        server_signature = sign_data(server_rsa_pr_key, server_pu_key_bytes)
+        connection_socket.sendall(server_pu_key_bytes)
+        connection_socket.sendall(server_signature)
+
         # print("server_pu_key_bytes: ")
         # print(server_pu_key_bytes)
-        connection_socket.sendall(server_pu_key_bytes)
+        # connection_socket.sendall(server_pu_key_bytes)
         print("Server Public Key sent to Client")
 
         # receive key

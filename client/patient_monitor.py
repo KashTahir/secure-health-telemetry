@@ -8,6 +8,7 @@ Author: Kashmain Tahir
 import socket
 from utils.dh_utils import *
 from utils.aes_utils import *
+from utils.rsa_utils import *
 
 def connect_to_station():
     """
@@ -25,8 +26,42 @@ def connect_to_station():
         print("Connected to server")
 
         # receive server public key
-        server_pu_key_bytes = monitor_socket.recv(4096)
-        print("Server public key received")
+        # server_pu_key_bytes = monitor_socket.recv(4096)
+        # server_signature = monitor_socket.recv(256)
+
+        server_pu_and_sign = monitor_socket.recv(4096)
+
+        # splitting incoming data into key and signaure
+        pu_end_marker = b"-----END PUBLIC KEY-----\n"
+        end_marker_index = server_pu_and_sign.find(pu_end_marker)
+        split_position = end_marker_index + len(pu_end_marker)
+    
+        server_pu_key_bytes = server_pu_and_sign[:split_position]
+        server_signature = server_pu_and_sign[split_position:]
+
+        RSA_SIGNATURE_LENGTH = 256
+        while len(server_signature) < RSA_SIGNATURE_LENGTH:
+            leftover_signature = monitor_socket.recv(256-len(server_signature))
+            if not leftover_signature:
+                print("could not receive full signature")
+                monitor_socket.close()
+                return
+            server_signature += leftover_signature
+
+        print("Server public key verified by client")
+
+        # print(len(server_pu_key_bytes))
+        # print(len(server_signature))
+
+        # verify server public key
+        server_rsa_pu_key = read_public_key("keys/server_pu.pem")
+        verified = verify_signature(server_rsa_pu_key, server_signature, server_pu_key_bytes)
+        if not verified:
+            print("server public key authentication failed.")
+            monitor_socket.close()
+            return
+
+
         # print(server_pu_key_bytes)
         server_pu_key = pu_key_to_obj(server_pu_key_bytes)
 
@@ -41,7 +76,6 @@ def connect_to_station():
         # print(client_pu_key_bytes)
         monitor_socket.sendall(client_pu_key_bytes)
         print("Client Public Key sent to Server")
-
 
         # generating shared secret
         shared_secret = generate_secret(client_pr_key, server_pu_key)
