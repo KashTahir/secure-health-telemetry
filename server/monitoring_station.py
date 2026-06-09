@@ -50,9 +50,45 @@ def start_monitoring_station():
         print("Server Public Key sent to Client")
 
         # receive key
-        client_pu_key_bytes = connection_socket.recv(4096)
-        print("Client public key received")
+        # client_pu_key_bytes = connection_socket.recv(4096)
+        # print("Client public key received")
         # print(client_pu_key_bytes)
+
+        client_pu_and_sign = connection_socket.recv(4096)
+         # splitting incoming data into key and signaure
+        pu_end_marker = b"-----END PUBLIC KEY-----\n"
+        end_marker_index = client_pu_and_sign.find(pu_end_marker)
+        split_position = end_marker_index + len(pu_end_marker)
+
+        
+        client_pu_key_bytes = client_pu_and_sign[:split_position]
+        client_signature = client_pu_and_sign[split_position:]
+
+        # receving complete signature from TCP stream
+        RSA_SIGNATURE_LENGTH = 256
+        while len(client_signature) < RSA_SIGNATURE_LENGTH:
+            leftover_signature = connection_socket.recv(256-len(client_signature))
+            if not leftover_signature:
+                print("could not receive full signature")
+                connection_socket.close()
+                station_socket.close()
+                return
+            client_signature += leftover_signature
+
+        # print(len(server_pu_key_bytes))
+        # print(len(server_signature))
+
+        # verify client public key
+        client_rsa_pu_key = read_public_key("keys/client_pu.pem")
+        verified = verify_signature(client_rsa_pu_key, client_signature, client_pu_key_bytes)
+        if not verified:
+            print("client public key authentication failed.")
+            connection_socket.close()
+            station_socket.close()
+            return
+        
+        print("Client public key verified by server")
+
         client_pu_key = pu_key_to_obj(client_pu_key_bytes)
 
         # generating shared secret

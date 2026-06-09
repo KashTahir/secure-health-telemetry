@@ -39,6 +39,7 @@ def connect_to_station():
         server_pu_key_bytes = server_pu_and_sign[:split_position]
         server_signature = server_pu_and_sign[split_position:]
 
+        # receiving complete signature from TCP stream
         RSA_SIGNATURE_LENGTH = 256
         while len(server_signature) < RSA_SIGNATURE_LENGTH:
             leftover_signature = monitor_socket.recv(256-len(server_signature))
@@ -47,8 +48,6 @@ def connect_to_station():
                 monitor_socket.close()
                 return
             server_signature += leftover_signature
-
-        print("Server public key verified by client")
 
         # print(len(server_pu_key_bytes))
         # print(len(server_signature))
@@ -60,8 +59,8 @@ def connect_to_station():
             print("server public key authentication failed.")
             monitor_socket.close()
             return
-
-
+        
+        print("Server public key verified by client")
         # print(server_pu_key_bytes)
         server_pu_key = pu_key_to_obj(server_pu_key_bytes)
 
@@ -71,11 +70,18 @@ def connect_to_station():
         client_pu_key = generate_dh_public_key(client_pr_key)
 
         # send key
-        client_pu_key_bytes = pu_key_to_bytes(client_pu_key)
+        # client_pu_key_bytes = pu_key_to_bytes(client_pu_key)
         # print("client_pu_key_bytes: ")
         # print(client_pu_key_bytes)
+        # monitor_socket.sendall(client_pu_key_bytes)
+
+        client_pu_key_bytes = pu_key_to_bytes(client_pu_key)
+        client_rsa_pr_key = read_private_key("keys/client_pr.pem")
+        client_signature = sign_data(client_rsa_pr_key, client_pu_key_bytes)
         monitor_socket.sendall(client_pu_key_bytes)
+        monitor_socket.sendall(client_signature)
         print("Client Public Key sent to Server")
+        
 
         # generating shared secret
         shared_secret = generate_secret(client_pr_key, server_pu_key)
