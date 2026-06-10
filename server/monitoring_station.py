@@ -96,10 +96,20 @@ def start_monitoring_station():
         # print("server shared secret")
         # print(shared_secret)
 
-        aes_key = generate_aes_key(shared_secret)
-        print("AES key generated")
+        dh_channel_key = generate_dh_shared_key(shared_secret)
+        print("Temporary DH key generated")
         # print("server aes_key")
         # print(aes_key.hex())
+
+        session_key = generate_session_key()
+        print("Server has generated session key")
+
+        nonce, enc_session_key = aesgcm_encrypt_bytes(dh_channel_key, session_key)
+        # print("1")
+        key_packet_to_send = nonce + enc_session_key
+        # print("2")
+        connection_socket.sendall(key_packet_to_send)
+        print("Server has sent session key")
         
         # nonce = connection_socket.recv(NONCE_SIZE)
 
@@ -127,7 +137,7 @@ def start_monitoring_station():
         
         nonce = data[:NONCE_SIZE]
         ciphertext = data[NONCE_SIZE:]
-        plaintext = aesgcm_decrypt(aes_key, nonce, ciphertext)
+        plaintext = aesgcm_decrypt(session_key, nonce, ciphertext)
         print(plaintext)
 
         connection_socket.close()

@@ -17,7 +17,7 @@ def generate_secret(own_pr_key, peer_pu_key):
 
 
 # generate a AES-256 key from the shared secret
-def generate_aes_key(shared_secret):
+def generate_dh_shared_key(shared_secret):
     aes_key = HKDF(
         algorithm=hashes.SHA256(),
         length=32,
@@ -26,6 +26,10 @@ def generate_aes_key(shared_secret):
         ).derive(shared_secret)
     
     return aes_key
+
+def generate_session_key():
+    AES_KEY_SIZE = 256
+    return AESGCM.generate_key(bit_length=AES_KEY_SIZE)
 
 # 96-bit nonce is the standard size
 NONCE_SIZE = 12
@@ -44,5 +48,22 @@ def aesgcm_decrypt(aes_key, nonce, ciphertext):
         aesgcm = AESGCM(aes_key)
         plaintext = aesgcm.decrypt(nonce, ciphertext, None)
         return plaintext.decode()
+    except InvalidTag:
+        print("Integrity Verification Failed. Could not decrypt data.")
+
+def aesgcm_encrypt_bytes(aes_key, data_in_bytes):
+
+    aesgcm = AESGCM(aes_key)
+    nonce = os.urandom(NONCE_SIZE)
+    ciphertext = aesgcm.encrypt(nonce, data_in_bytes, None)
+    return nonce, ciphertext
+
+# decrypt using AESGCM
+def aesgcm_decrypt_bytes(aes_key, nonce, ciphertext):
+
+    try:
+        aesgcm = AESGCM(aes_key)
+        plaintext_in_bytes = aesgcm.decrypt(nonce, ciphertext, None)
+        return plaintext_in_bytes
     except InvalidTag:
         print("Integrity Verification Failed. Could not decrypt data.")

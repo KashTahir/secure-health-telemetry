@@ -88,8 +88,14 @@ def connect_to_station():
         # print("client shared secret")
         # print(shared_secret)
         
-        aes_key = generate_aes_key(shared_secret)
-        print("AES key generated")
+        dh_channel_key = generate_dh_shared_key(shared_secret)
+        print("Temporary DH key generated")
+        enc_session_key_packet = monitor_socket.recv(1024)
+        print("client has received session key")
+        nonce = enc_session_key_packet[:NONCE_SIZE]
+        enc_session_key = enc_session_key_packet[NONCE_SIZE:]
+        session_key = aesgcm_decrypt_bytes(dh_channel_key, nonce, enc_session_key)
+        print("client has decrypted session key")
         # print("client aes_key")
         # print(aes_key.hex())
 
@@ -108,7 +114,7 @@ def connect_to_station():
             monitor_socket.close()
             return
 
-        nonce, ciphertext = aesgcm_encrypt(aes_key, patient_data)
+        nonce, ciphertext = aesgcm_encrypt(session_key, patient_data)
         packet_to_send = nonce + ciphertext
         
         # FAIL INTEGRITY VERIFICATION DEMO
