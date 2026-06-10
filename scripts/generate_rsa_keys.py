@@ -11,7 +11,6 @@ def generate_rsa_key_pair(pr_key_file, pu_key_file):
     pr_key = generate_rsa_pr_key(pr_key_file)
     generate_rsa_pu_key(pr_key, pu_key_file)
 
-
 def generate_rsa_pr_key(pr_key_file):
     print("generating rsa pr key")
     private_key = rsa.generate_private_key(

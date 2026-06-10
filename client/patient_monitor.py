@@ -23,11 +23,7 @@ def connect_to_station():
         # set up
         monitor_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         monitor_socket.connect((HOST, PORT))
-        print("Connected to server")
-
-        # receive server public key
-        # server_pu_key_bytes = monitor_socket.recv(4096)
-        # server_signature = monitor_socket.recv(256)
+        client_log("connected to Monitoring Station")
 
         server_pu_and_sign = monitor_socket.recv(4096)
 
@@ -44,24 +40,20 @@ def connect_to_station():
         while len(server_signature) < RSA_SIGNATURE_LENGTH:
             leftover_signature = monitor_socket.recv(256-len(server_signature))
             if not leftover_signature:
-                print("could not receive full signature")
+                client_log("could not receive full signature")
                 monitor_socket.close()
                 return
             server_signature += leftover_signature
-
-        # print(len(server_pu_key_bytes))
-        # print(len(server_signature))
 
         # verify server public key
         server_rsa_pu_key = read_public_key("keys/server_pu.pem")
         verified = verify_signature(server_rsa_pu_key, server_signature, server_pu_key_bytes)
         if not verified:
-            print("server public key authentication failed.")
+            client_log("server public key authentication failed.")
             monitor_socket.close()
             return
         
-        print("Server public key verified by client")
-        # print(server_pu_key_bytes)
+        client_log("Server public key verified")
         server_pu_key = pu_key_to_obj(server_pu_key_bytes)
 
         # key generation
@@ -70,54 +62,51 @@ def connect_to_station():
         client_pu_key = generate_dh_public_key(client_pr_key)
 
         # send key
-        # client_pu_key_bytes = pu_key_to_bytes(client_pu_key)
-        # print("client_pu_key_bytes: ")
-        # print(client_pu_key_bytes)
-        # monitor_socket.sendall(client_pu_key_bytes)
-
         client_pu_key_bytes = pu_key_to_bytes(client_pu_key)
         client_rsa_pr_key = read_private_key("keys/client_pr.pem")
         client_signature = sign_data(client_rsa_pr_key, client_pu_key_bytes)
+
+        # FAIL AUTHENTICATION VERIFICATION
+        key_tamper_mode = False
+        if key_tamper_mode:
+            print("CLIENT PUBLIC KEY TAMPER MODE")
+            tampered_pu_key = bytearray(client_pu_key_bytes)
+            # XORing one of the bytes with 00000001 to modify the data 
+            tampered_pu_key[10] ^= 1
+            client_pu_key_bytes = bytes(tampered_pu_key)
+            return
+
         monitor_socket.sendall(client_pu_key_bytes)
         monitor_socket.sendall(client_signature)
-        print("Client Public Key sent to Server")
-        
+        client_log("Public Key sent to Station")
 
         # generating shared secret
         shared_secret = generate_secret(client_pr_key, server_pu_key)
-        # print("client shared secret")
-        # print(shared_secret)
         
         dh_channel_key = generate_dh_shared_key(shared_secret)
-        print("Temporary DH key generated")
         enc_session_key_packet = monitor_socket.recv(1024)
-        print("client has received session key")
         nonce = enc_session_key_packet[:NONCE_SIZE]
         enc_session_key = enc_session_key_packet[NONCE_SIZE:]
         session_key = aesgcm_decrypt_bytes(dh_channel_key, nonce, enc_session_key)
-        print("client has decrypted session key")
-        # print("client aes_key")
-        # print(aes_key.hex())
-
-        # send data
+        client_log("session key received")
 
         # read data or return if file is not found
         try:
             with open("data/test_normal.txt", "r") as file:
                 patient_data = file.read()
         except FileNotFoundError:
-            print("patient data not found")
+            client_log("patient data not found")
             monitor_socket.close()
             return
         if not len(patient_data) > 0:
-            print("patient data empty")
+            client_log("patient data empty")
             monitor_socket.close()
             return
 
         nonce, ciphertext = aesgcm_encrypt(session_key, patient_data)
         packet_to_send = nonce + ciphertext
         
-        # FAIL INTEGRITY VERIFICATION DEMO
+        # FAIL DATA INTEGRITY VERIFICATION
         data_tamper_mode = False
         if data_tamper_mode:
             print("DATA TAMPER MODE")
@@ -125,22 +114,19 @@ def connect_to_station():
             # XORing one of the bytes with 00000001 to modify the data 
             packet_to_send_bytes_arr[15] ^= 1
             packet_to_send = bytes(packet_to_send_bytes_arr)
+            monitor_socket.close()
+            return
             
-
         monitor_socket.sendall(packet_to_send)
-
-        # print("Ciphertext:")
-        # print(packet_to_send)
-
-        # monitor_socket.sendall(patient_data.encode())
-        print("Data sent to Monitoring Station")
+        client_log("Data sent to Monitoring Station")
 
         monitor_socket.close()
 
-
     except Exception as error:
-        print(f"could not start patient monitor: {error}")
+        client_log(f"could not start patient monitor: {error}")
 
+def client_log(message):
+    print("[MONITOR] " + message)
 
 def main():
     connect_to_station()

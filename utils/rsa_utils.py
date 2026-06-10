@@ -50,20 +50,3 @@ def verify_signature(public_key, signature, data):
         return True
     except Exception:
         return False
-    
-
-# pr_key = read_private_key("keys/server_pr.pem")
-# pu_key = read_public_key("keys/server_pu.pem")
-
-# message = b"Hello World"
-# signature = sign_data(pr_key, message)
-
-# # message2 = b"hello World"
-# # pr_key2 = read_private_key("keys/client_pr.pem")
-# # signature2 = sign_data(pr_key2, message)
-
-# print(verify_signature(
-#     pu_key,
-#     signature,
-#     message
-# ))

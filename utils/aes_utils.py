@@ -15,7 +15,6 @@ def generate_secret(own_pr_key, peer_pu_key):
     shared_secret = own_pr_key.exchange(peer_pu_key)
     return shared_secret
 
-
 # generate a AES-256 key from the shared secret
 def generate_dh_shared_key(shared_secret):
     aes_key = HKDF(
