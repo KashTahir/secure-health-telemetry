@@ -41,6 +41,15 @@ def start_monitoring_station():
         server_pu_key_bytes = pu_key_to_bytes(server_pu_key)
         server_rsa_pr_key = read_private_key("keys/server_pr.pem")
         server_signature = sign_data(server_rsa_pr_key, server_pu_key_bytes)
+
+        key_tamper_mode = False
+        if key_tamper_mode:
+            print("PUBLIC KEY TAMPER MODE")
+            tampered_pu_key = bytearray(server_pu_key_bytes)
+            # XORing one of the bytes with 00000001 to modify the data 
+            tampered_pu_key[10] ^= 1
+            server_pu_key_bytes = bytes(tampered_pu_key)
+
         connection_socket.sendall(server_pu_key_bytes)
         connection_socket.sendall(server_signature)
 

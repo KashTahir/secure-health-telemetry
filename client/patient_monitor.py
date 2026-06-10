@@ -118,9 +118,9 @@ def connect_to_station():
         packet_to_send = nonce + ciphertext
         
         # FAIL INTEGRITY VERIFICATION DEMO
-        TAMPER_MODE = False
-        if TAMPER_MODE:
-            print("TAMPER MODE ON")
+        data_tamper_mode = False
+        if data_tamper_mode:
+            print("DATA TAMPER MODE")
             packet_to_send_bytes_arr = bytearray(packet_to_send)
             # XORing one of the bytes with 00000001 to modify the data 
             packet_to_send_bytes_arr[15] ^= 1
