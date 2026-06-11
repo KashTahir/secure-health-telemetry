@@ -10,13 +10,17 @@ import os
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.exceptions import InvalidTag
 
-# generate shared secret using their public keys and own private keys = K
 def generate_secret(own_pr_key, peer_pu_key):
+    """
+    generates a shared secret using personal private key and the peer's public key
+    """
     shared_secret = own_pr_key.exchange(peer_pu_key)
     return shared_secret
 
-# generate a AES-256 key from the shared secret
 def generate_dh_shared_key(shared_secret):
+    """
+    generates a temporary key from Diffie Hellman shared secret
+    """
     aes_key = HKDF(
         algorithm=hashes.SHA256(),
         length=32,
@@ -27,21 +31,29 @@ def generate_dh_shared_key(shared_secret):
     return aes_key
 
 def generate_session_key():
+    """
+    generates a random session key for AES-256 encryption
+    """
     AES_KEY_SIZE = 256
     return AESGCM.generate_key(bit_length=AES_KEY_SIZE)
 
-# 96-bit nonce is the standard size
+# standard size based on documentation
 NONCE_SIZE = 12
-# encrypt using AESGCM
+
 def aesgcm_encrypt(aes_key, data):
+    """
+    encrypts string using AES-GCM and creates a random nonce
+    """
 
     aesgcm = AESGCM(aes_key)
     nonce = os.urandom(NONCE_SIZE)
     ciphertext = aesgcm.encrypt(nonce, data.encode(), None)
     return nonce, ciphertext
 
-# decrypt using AESGCM
 def aesgcm_decrypt(aes_key, nonce, ciphertext):
+    """
+    decrypts AES-GCM ciphertext and return a string
+    """
 
     try:
         aesgcm = AESGCM(aes_key)
@@ -51,14 +63,19 @@ def aesgcm_decrypt(aes_key, nonce, ciphertext):
         print("Integrity Verification Failed. Could not decrypt data.")
 
 def aesgcm_encrypt_bytes(aes_key, data_in_bytes):
+    """
+    encrypts bytes using AES-GCM and creates a random nonce
+    """
 
     aesgcm = AESGCM(aes_key)
     nonce = os.urandom(NONCE_SIZE)
     ciphertext = aesgcm.encrypt(nonce, data_in_bytes, None)
     return nonce, ciphertext
 
-# decrypt using AESGCM
 def aesgcm_decrypt_bytes(aes_key, nonce, ciphertext):
+    """
+    decrypts AES-GCM ciphertext and returns bytes
+    """
 
     try:
         aesgcm = AESGCM(aes_key)
