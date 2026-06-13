@@ -24,13 +24,16 @@ def generate_rsa_pr_key(pr_key_file):
     )
 
     # write the private key to the file
-    with open(pr_key_file, "wb") as pr_file:
-        pem = private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
-        )
-        pr_file.write(pem)
+    try:
+        with open(pr_key_file, "wb") as pr_file:
+            pem = private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption()
+            )
+            pr_file.write(pem)
+    except Exception as e:
+        print("could not save private key: {e}")
 
     return private_key
 
@@ -42,12 +45,16 @@ def generate_rsa_pu_key(private_key, pu_key_file):
     public_key = private_key.public_key()
 
     # write the public key to the file
-    with open(pu_key_file, "wb") as pu_file:
-        pem = public_key.public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
-        )
-        pu_file.write(pem)
+    try:
+        with open(pu_key_file, "wb") as pu_file:
+            pem = public_key.public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo
+            )
+            pu_file.write(pem)
+    except Exception as e:
+        print("could not save public key: {e}")
+
 
 
 def main():
