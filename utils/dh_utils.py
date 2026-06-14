@@ -14,8 +14,8 @@ def generate_dh_params():
     # key size is set so that it is not too slow while maintaing standard security
     print("Generating DH parameters...")
     dh_params = dh.generate_parameters(
-    generator=2,
-    key_size=2048
+        generator=2,
+        key_size=2048
     )
     print("...DH parameters Generated")
     return dh_params

@@ -61,6 +61,7 @@ def aesgcm_decrypt(aes_key, nonce, ciphertext):
         return plaintext.decode()
     except InvalidTag:
         print("Integrity Verification Failed. Could not decrypt data.")
+        # return None
 
 def aesgcm_encrypt_bytes(aes_key, data_in_bytes):
     """
@@ -82,4 +83,4 @@ def aesgcm_decrypt_bytes(aes_key, nonce, ciphertext):
         plaintext_in_bytes = aesgcm.decrypt(nonce, ciphertext, None)
         return plaintext_in_bytes
     except InvalidTag:
-        print("Integrity Verification Failed. Could not decrypt data.")
+        return None

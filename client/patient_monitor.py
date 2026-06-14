@@ -38,7 +38,13 @@ def connect_to_station():
         nonce = enc_session_key_packet[:NONCE_SIZE]
         enc_session_key = enc_session_key_packet[NONCE_SIZE:]
         session_key = aesgcm_decrypt_bytes(dh_channel_key, nonce, enc_session_key)
-        client_log("session key received")
+        if session_key is None:
+            client_log("Integrity Verification Failed. Could not decrypt session key.")
+            monitor_socket.close()
+            return
+        else:
+            client_log("session key received")
+        
 
         # send patient health telemetry
         send_telemtry(monitor_socket, session_key)
@@ -114,9 +120,8 @@ def send_telemtry(monitor_socket, session_key):
         client_log("DATA TAMPER MODE")
         packet_to_send_bytes_arr = bytearray(packet_to_send)
         # simulating an attack by modifying one byte of patient data 
-        packet_to_send_bytes_arr[15] ^= 1
+        packet_to_send_bytes_arr[30] ^= 1
         packet_to_send = bytes(packet_to_send_bytes_arr)
-        monitor_socket.close()
         return
         
     monitor_socket.sendall(packet_to_send)

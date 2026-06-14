@@ -49,6 +49,16 @@ def start_monitoring_station():
 
         # encrypt session key using temporary DH key and send it to the client
         nonce, enc_session_key = aesgcm_encrypt_bytes(dh_channel_key, session_key)
+
+         # SESSION KEY TAMPERING
+        session_key_tamper_mode = False
+        if session_key_tamper_mode:
+            server_log("SESSION KEY TAMPERED")
+            enc_session_key_byte_arr = bytearray(enc_session_key)
+            # simulating an attack by modifying one byte of the session key 
+            enc_session_key_byte_arr[30] ^= 1
+            enc_session_key = bytes(enc_session_key_byte_arr)
+
         key_packet_to_send = nonce + enc_session_key
         connection_socket.sendall(key_packet_to_send)
         server_log("session key sent")
@@ -127,8 +137,10 @@ def receive_telemtery(connection_socket, session_key):
     nonce = data[:NONCE_SIZE]
     ciphertext = data[NONCE_SIZE:]
     plaintext = aesgcm_decrypt(session_key, nonce, ciphertext)
+
     server_log("Valid Telemetry Decrypted")
     server_log(plaintext)
+
 
 
 def dh_server_key_exchange(connection_socket, station_socket):
@@ -154,9 +166,7 @@ def dh_server_key_exchange(connection_socket, station_socket):
         # simulating an attack by modifying one byte of public key
         tampered_pu_key[10] ^= 1
         server_pu_key_bytes = bytes(tampered_pu_key)
-        connection_socket.close()
-        station_socket.close()
-        return
+        # return
 
     connection_socket.sendall(server_pu_key_bytes)
     connection_socket.sendall(server_signature)
